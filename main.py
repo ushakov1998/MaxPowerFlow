@@ -34,7 +34,7 @@ except:
     exit()
 
 # Создание файлов КС и траектории утяжеления RastrWin3
-create_files.create_file_sch(flowgate_lines, 'new')
+create_files.create_file_sch(flowgate_lines, 'flow_gate_name')
 create_files.create_file_ut2(trajectory_nodes)
 
 # Вычисление МДП по критериям
