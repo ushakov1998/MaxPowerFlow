@@ -25,7 +25,7 @@ def create_file_sch(flowgate_lines: dict, flowgate_name: str) -> None:
     # Создание сечения
     flow_gate.AddRow()
     flow_gate.Cols('ns').SetZ(0, 1)
-    # Give a name for the flowgate
+    # Задание имени сечению
     flow_gate.Cols('name').SetZ(0, flowgate_name)
     flow_gate.Cols('sta').SetZ(0, 1)
 
