@@ -4,6 +4,22 @@ import regime_config
 rastr = win32com.client.Dispatch('Astra.Rastr')
 
 
+def iterating() -> None:
+    """
+    Итерирование по таблице узлов с
+    опеределением u_kr и u_min
+    """
+    # Определяем COM-путь к таблице узлов
+    nodes = rastr.Tables('node')
+    for i in range(nodes.Size):
+        # Поиск узла нагрузки (1 - узел с нагрукой)
+        if nodes.Cols('tip').Z(i) == 1:
+            u_kr = nodes.Cols('uhom').Z(i) * 0.7  # Критический уровень напряжения
+            u_min = u_kr * 1.15  # Допустимый уровень напряжения
+            nodes.Cols('umin').SetZ(i, u_min)
+            nodes.Cols('contr_v').SetZ(i, 1)
+
+
 def criterion1(p_fluctuations: float) -> float:
     """
     Обеспечение 20% запаса по статической устойчивости
@@ -40,17 +56,8 @@ def criterion2(p_fluctuations: float) -> float:
     regime_config.load_traj(rastr)
     regime_config.set_regime(rastr, 200, 1, 0, 1)
 
-    # Redefine the COM path to the RastrWin3 node table
-    nodes = rastr.Tables('node')
-
-    # Вычисление допустимого уровня напряжения в узлах с нагрузкой
-    for i in range(nodes.Size):
-        # Поиск узла нагрузки (1 - узел с нагрукой)
-        if nodes.Cols('tip').Z(i) == 1:
-            u_kr = nodes.Cols('uhom').Z(i) * 0.7  # Критический уровень напряжения
-            u_min = u_kr * 1.15  # Допустимый уровень напряжения
-            nodes.Cols('umin').SetZ(i, u_min)
-            nodes.Cols('contr_v').SetZ(i, 1)
+    # Итерирование по таблице узлов
+    iterating()
 
     # Пошаговое утяжеление режима
     regime_config.do_regime_weight(rastr)
@@ -76,9 +83,8 @@ def criterion3(p_fluctuations: float, faults_lines: dict) -> float:
     regime_config.load_traj(rastr)
     regime_config.set_regime(rastr, 200, 1, 1, 1)
 
-    # Redefine the COM path to the RastrWin3 branch table
+    # COM путь к таблице ветвей и таблице сечений
     branches = rastr.Tables('vetv')
-    # Redefine the COM path to the RastrWin3 flowgate table
     flowgate = rastr.Tables('sechen')
 
     # Список МДП для каждого возмущения
@@ -116,7 +122,7 @@ def criterion3(p_fluctuations: float, faults_lines: dict) -> float:
                 # Допустимый уровень напряжения для схемы
                 mpf_acceptable = abs(flowgate.Cols('psech').Z(0)) * 0.92
 
-                # Redefine the COM path to the RastrWin3 regime collections
+                # Определение COM пути к коллекции режимов (шагов утяжеления)
                 toggle = rastr.GetToggle()
 
                 # Итеративный возврат к допустимому уровню МДП
@@ -158,22 +164,13 @@ def criterion4(p_fluctuations: float, faults_lines: dict) -> float:
     regime_config.load_traj(rastr)
     regime_config.set_regime(rastr, 200, 1, 0, 1)
 
-    # Redefine the COM path to the RastrWin3 node table
-    nodes = rastr.Tables('node')
     # Redefine the COM path to the RastrWin3 branch table
     branches = rastr.Tables('vetv')
     # Redefine the COM path to the RastrWin3 flowgate table
     flowgate = rastr.Tables('sechen')
 
-    # Вычисление допустимого уровня напряжения в узлах с нагрузкой
-    for j in range(nodes.Size):
-        # Поиск узла нагрузки (1 - узел с нагрукой)
-        if nodes.Cols('tip').Z(j) == 1:
-            # Критический уровень напряжения
-            u_kr = nodes.Cols('uhom').Z(j) * 0.7
-            # Допустимый уровень напряжения
-            u_min = u_kr * 1.1
-            nodes.Cols('umin').SetZ(j, u_min)
+    # Итерирование по таблице узлов
+    iterating()
 
     # Лист МДП для каждого возмущения
     mpf_4 = []

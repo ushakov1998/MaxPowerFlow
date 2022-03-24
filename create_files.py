@@ -1,4 +1,5 @@
 import win32com.client
+
 rastrWin3 = win32com.client.Dispatch('Astra.Rastr')
 
 

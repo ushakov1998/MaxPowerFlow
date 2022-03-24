@@ -12,24 +12,24 @@ p_fluctuations = 30
 # Ввод файла flowgate.json с указанием директории
 try:
     flowgate_lines = data_processing.json_to_dic(input("Укажите путь к "
-                                                    "flowgate .json: "))
-except:
+                                                       "flowgate .json: "))
+except (ValueError, Exception):
     print("Ошибка! Неизвестная (директория,тип файла) или файл не содержится в данной директории")
     exit()
 
 # Ввод файла faults.json с указанием директории
 try:
     faults_lines = data_processing.json_to_dic(input("Укажите путь к "
-                                                  "faults .json: "))
-except:
+                                                     "faults .json: "))
+except (ValueError, Exception):
     print("Ошибка! Неизвестная (директория/тип файла) или файл не содержится в данной директории")
     exit()
 
 # Ввод файла vector.csv с указанием директории
 try:
     trajectory_nodes = data_processing.csv_to_list(input("Укажите путь к "
-                                                      "vector.csv: "))
-except:
+                                                         "vector.csv: "))
+except (ValueError, Exception):
     print("Ошибка! Неизвестная (директория/тип файла) или файл не содержится в данной директории")
     exit()
 
@@ -55,5 +55,3 @@ print(f"МДП по критерию 5.2: "
 for item in os.listdir('.'):
     if item.endswith(".sch") or item.endswith(".ut2"):
         os.remove(item)
-
-
